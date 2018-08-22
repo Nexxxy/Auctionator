@@ -1617,6 +1617,15 @@ function Atr_CreateAuction_OnClick ()
   Atr_SetToShowCurrent();
 end
 
+function Atr_SetStackCountToMax()
+	if (gCurrentPane ~= nil) then
+		local maxAuctions = math.floor (gCurrentPane.totalItems / Atr_StackSize());
+		--print ("Hello World: ", maxAuctions);
+		Atr_Batch_NumAuctions:SetText (maxAuctions);
+	end
+end
+
+
 function Atr_My_Test_Func_OnClick()
 	Auctionator.Debug.Message( 'Atr_My_Test_Func_OnClick : ', gCurrentPane.activeScan.itemLink, gCurrentPane.activeScan.itemName);
 	
