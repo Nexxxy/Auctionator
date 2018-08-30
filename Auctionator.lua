@@ -1598,7 +1598,7 @@ function Atr_CreateAuction_OnClick ()
 	Auctionator.Debug.Message( 'Atr_CreateAuction_OnClick() Items left : ',countItems);	
 	-- this only works if the user rly wants to sell all! 
 	if (countItems < gJustPosted.StackSize) then		
-		StartAuction (stackStartingPrice, stackBuyoutPrice, duration, countItems, 1);   
+		PostAuction (stackStartingPrice, stackBuyoutPrice, duration, countItems, 1);   
 		Auctionator.Debug.Message( 'Atr_CreateAuction_OnClick : ', "adding 1 unfinished Stack of ", countItems);			
 		--- search for the same ID and drop it into mouse hand and then into auctionhouse
 		local bagID, slotID = Atr_Search_Bags_For_Item(gCurrentPane.activeScan.itemLink);
@@ -1613,7 +1613,8 @@ function Atr_CreateAuction_OnClick ()
 	end		
   end
 
-  StartAuction (stackStartingPrice, stackBuyoutPrice, duration, gJustPosted.StackSize, gJustPosted.NumStacks);   
+  PostAuction (stackStartingPrice, stackBuyoutPrice, duration, gJustPosted.StackSize, gJustPosted.NumStacks);
+
   Atr_SetToShowCurrent();
 end
 
@@ -1625,11 +1626,6 @@ function Atr_SetStackCountToMax()
 	end
 end
 
-
-function Atr_My_Test_Func_OnClick()
-	Auctionator.Debug.Message( 'Atr_My_Test_Func_OnClick : ', gCurrentPane.activeScan.itemLink, gCurrentPane.activeScan.itemName);
-	
-end
 
 -----------------------------------------
 
@@ -2556,6 +2552,7 @@ function Atr_StackPriceChangedFunc ()
     MoneyInputFrame_SetCopper (Atr_StartingPrice, new_Item_StartPrice * Atr_StackSize());
   end
 
+  gSellPane.UINeedsUpdate = true;
 end
 
 -----------------------------------------
@@ -2575,6 +2572,7 @@ function Atr_ItemPriceChangedFunc ()
     MoneyInputFrame_SetCopper (Atr_StartingPrice, new_Item_StartPrice  * Atr_StackSize());
   end
 
+  gSellPane.UINeedsUpdate = true;
 end
 
 -----------------------------------------
@@ -3158,14 +3156,9 @@ function Atr_SetDepositText()
 
   if (auctionCount > 0) then
     local duration = UIDropDownMenu_GetSelectedValue(Atr_Duration);
+    local deposit1 = GetAuctionDeposit (duration, MoneyInputFrame_GetCopper(Atr_StartingPrice), MoneyInputFrame_GetCopper(Atr_StackPrice), Atr_StackSize(), Atr_Batch_NumAuctions:GetNumber());
 
-    local deposit1 = CalculateAuctionDeposit (duration) / auctionCount;
-    local numAuctionString = "";
-    if (Atr_Batch_NumAuctions:GetNumber() > 1) then
-      numAuctionString = "  |cffff55ff x"..Atr_Batch_NumAuctions:GetNumber();
-    end
-
-    Atr_Deposit_Text:SetText (ZT("Deposit")..":    "..zc.priceToMoneyString(deposit1 * Atr_StackSize(), true)..numAuctionString);
+    Atr_Deposit_Text:SetText (ZT("Deposit")..":    "..zc.priceToMoneyString(deposit1, true));
   else
     Atr_Deposit_Text:SetText ("");
   end
